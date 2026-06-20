@@ -142,6 +142,9 @@
   body.dark .ngmenu{background:#172230;border-color:#27333f}
   body.dark .ngmenu button:hover{background:#0f1620}
   body.dark .ngmenu button.on{background:var(--sea);color:#0f1620}
+  .simtag{display:inline-block;background:#ff8a4c22;color:var(--sun);border:1px solid #ff8a4c55;border-radius:6px;padding:1px 7px;font-size:11px;font-weight:800;margin-left:8px;vertical-align:middle}
+  .mapcanvas{background:linear-gradient(180deg,#eaf4f8,#f4ede1)}
+  body.dark .mapcanvas{background:linear-gradient(180deg,#0f2230,#1b2330)}
 </style>
 </head>
 <body>
@@ -158,7 +161,7 @@
   <section class="view on" id="v_dash"></section>
   <section class="view" id="v_tourn"><h1>Tävlingar</h1><div class="sub">Riktig SBT-kalender 2026.</div><div class="chips" id="tchips"></div><div class="grid" id="tgrid"></div></section>
   <section class="view" id="v_tdetail"><span class="crumb" onclick="go('tourn')">← Tillbaka</span><div id="tdbody"></div></section>
-  <section class="view" id="v_build"><h1>Bygg &amp; kör tävling</h1><div class="sub">Lotta, schemalägg med domartilldelning och TrueSkill-närhetsprognos – och <b>kör tävlingen</b>: simulera resultat → tabeller → slutspel → rankingpoäng.</div>
+  <section class="view" id="v_build"><h1>Bygg &amp; kör tävling</h1><div class="sub">Lotta, schemalägg med domartilldelning och TrueSkill-närhetsprognos – och <b>kör tävlingen</b>: simulera resultat → tabeller → slutspel → rankingpoäng. <span class="simtag">Simulerat exempel</span></div>
     <div class="blayout"><div class="panel">
       <div class="row2"><div class="fld"><label>Lag (av 14)</label><input id="bN" type="number" min="6" max="14" value="14"></div><div class="fld"><label>Banor</label><input id="bC" type="number" min="1" max="10" value="3"></div></div>
       <div class="row2"><div class="fld"><label>Spelform</label><select id="bForm"><option value="mod">Modifierat</option><option value="rr">Vanligt</option></select></div><div class="fld"><label>Nivå</label><select id="bLvl"><option value="5">5★</option><option value="3" selected>3★</option><option value="2">2★</option><option value="1">1★</option></select></div></div>
@@ -176,7 +179,7 @@
   <section class="view" id="v_reg"><h1>Register</h1><div class="sub">Klubbar och medlemmar. Klicka på en klubb för dess spelare.</div><div id="regbody"></div></section>
   <section class="view" id="v_lic"><h1>Licenser</h1><div class="sub">Licensstatus per spelare (kalenderår). I skarp drift hämtas medlemmar från IdrottOnline.</div><div id="licbody"></div></section>
   <section class="view" id="v_trans"><h1>Övergångar</h1><div class="sub">Klubbövergångar. Båda klubbarna involveras om spelaren varit aktiv senaste året.</div><div id="transbody"></div></section>
-  <section class="view" id="v_eco"><h1>Ekonomi</h1><div class="sub">Avgifter, fakturor och flöden – beräknat. Verklig betalning kräver betalkonto + backend.</div><div id="ecobody"></div></section>
+  <section class="view" id="v_eco"><h1>Ekonomi &amp; sponsring</h1><div class="sub">Avgifter, fakturor och flöden – beräknat. Verklig betalning kräver betalkonto + backend.</div><div id="ecobody"></div></section>
   <section class="view" id="v_ref"><h1>Domare</h1><div class="sub">Domarregister (förbundsnivå) och Servas vilo-medvetna domarmotor i tävling.</div><div id="refbody"></div></section>
   <div class="foot">Serva Plattform · konceptprototyp · all data ur verklig svensk beachdata (BeachInfo, synkad från Profixio) · ingen lagring/betalning – kräver backend. · Build 2026-06-20</div>
 </main>
@@ -221,8 +224,8 @@ const ALL=()=>MEN.concat(WOMEN);
 function clubs(){const m={};ALL().forEach(p=>{m[p[1]]=m[p[1]]||{n:0,pts:0};m[p[1]].n++;m[p[1]].pts+=p[2]>=60000?2000:p[2];});return Object.entries(m).map(([k,v])=>({club:k,...v})).sort((a,b)=>b.pts-a.pts);}
 
 /* ===== role-based nav ===== */
-const TABS=[["dash","Översikt",["forbund","klubb","arrangor","spelare"],"both"],["tourn","Tävlingar",["forbund","klubb","arrangor","spelare"],"beach"],["build","Bygg &amp; kör",["forbund","arrangor"],"beach"],["rank","Nationell ranking",["forbund","klubb","arrangor","spelare"],"beach"],["reg","Register",["forbund","klubb"],"both"],["lic","Licenser",["forbund","klubb"],"both"],["trans","Övergångar",["forbund","klubb"],"both"],["eco","Avgifter",["forbund","klubb"],"both"]];
-let role='forbund';let sport='beach';var GROUPMAP={dash:'Översikt',tourn:'Tävling',build:'Tävling',serier:'Tävling',cup:'Tävling',rank:'Ranking',intl:'Ranking',whatif:'Ranking',reg:'Spelare',lic:'Spelare',trans:'Spelare',talang:'Spelare',alloc:'Arrangör',refassign:'Arrangör',funk:'Arrangör',checkin:'Arrangör',wc:'Arrangör',eco:'Ekonomi',sponsor:'Ekonomi',analys:'Analys'};var GROUPORDER=['Översikt','Tävling','Ranking','Spelare','Arrangör','Ekonomi','Analys'];var activeGroup='Översikt';var openGroup=null;
+const TABS=[["dash","Översikt",["forbund","klubb","arrangor","spelare"],"both"],["tourn","Tävlingar",["forbund","klubb","arrangor","spelare"],"beach"],["build","Bygg &amp; kör",["forbund","arrangor"],"beach"],["rank","Nationell ranking",["forbund","klubb","arrangor","spelare"],"beach"],["reg","Register",["forbund","klubb"],"both"],["lic","Licenser",["forbund","klubb"],"both"],["trans","Övergångar",["forbund","klubb"],"both"],["eco","Ekonomi & sponsring",["forbund","klubb"],"both"]];
+let role='forbund';let sport='beach';var GROUPMAP={dash:'Översikt',tourn:'Tävling',build:'Tävling',serier:'Tävling',cup:'Tävling',rank:'Ranking',intl:'Ranking',whatif:'Ranking',reg:'Spelare',lic:'Spelare',trans:'Spelare',talang:'Spelare',alloc:'Arrangör',refassign:'Arrangör',funk:'Arrangör',checkin:'Arrangör',wc:'Arrangör',eco:'Ekonomi',analys:'Analys',elig:'Arrangör',entry:'Tävling',weather:'Arrangör'};var GROUPORDER=['Översikt','Tävling','Ranking','Spelare','Arrangör','Ekonomi','Analys'];var activeGroup='Översikt';var openGroup=null;
 function renderNav(){var vis=TABS.filter(function(t){return t[2].includes(role)&&(!t[3]||t[3]==='both'||t[3]===sport);});var grps=GROUPORDER.filter(function(g){return vis.some(function(t){return GROUPMAP[t[0]]===g;});});var ct=vis.filter(function(t){return t[0]===cur;})[0];var curG=ct?GROUPMAP[ct[0]]:'';var html=grps.map(function(g){var items=vis.filter(function(t){return GROUPMAP[t[0]]===g;});if(items.length===1){var t=items[0];return '<button class="ng'+(cur===t[0]?' on':'')+'" data-v="'+t[0]+'">'+(typeof T==='function'?T(t[1]):t[1])+'</button>';}var open=openGroup===g;var menu=open?'<div class="ngmenu">'+items.map(function(t){return '<button data-v="'+t[0]+'" class="'+(cur===t[0]?'on':'')+'">'+(typeof T==='function'?T(t[1]):t[1])+'</button>';}).join('')+'</div>':'';return '<div class="ngwrap"><button class="ng'+(curG===g?' on':'')+(open?' open':'')+'" data-g="'+g+'">'+(typeof T==='function'?T(g):g)+' ▾</button>'+menu+'</div>';}).join('');document.getElementById('subnav').innerHTML='<div class="navrow">'+html+'</div>';}
 let cur='dash';
 function go(v){cur=v;openGroup=null;document.querySelectorAll('.view').forEach(s=>s.classList.remove('on'));document.getElementById('v_'+v).classList.add('on');renderNav();window.scrollTo(0,0);}
@@ -236,7 +239,7 @@ function renderDash(){const c=clubs();const lic=ALL().length, miss=2;
   <div class="kpi"><div class="n">${c.length}</div><div class="l">klubbar</div></div>
   <div class="kpi"><div class="n">${CAL.length}</div><div class="l">tävlingar i kalendern</div></div>
   <div class="kpi"><div class="n">${lic-miss}/${lic}</div><div class="l">giltiga licenser</div></div>
-  <div class="kpi"><div class="n">${TRANSFERS.length}</div><div class="l">övergångar i år</div></div></div>
+  </div>
  <h2>Snabbåtgärder</h2><div class="grid">
   ${role==='arrangor'||role==='forbund'?`<div class="card" onclick="go('build')"><h3>⚡ Bygg &amp; kör tävling</h3><div class="meta">Lotta, schemalägg, kör och dela ut rankingpoäng.</div></div>`:''}
   <div class="card" onclick="go('tourn')"><h3>📅 Tävlingskalender</h3><div class="meta">Anmäl, följ och se resultat.</div></div>
@@ -395,7 +398,7 @@ function render(){
   h+='<tr><td class="wk">v.'+(24+i)+'</td><td><span class="star">'+'★'.repeat(star)+'</span></td><td><select data-i="'+i+'" class="aSel" style="width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--sand2)">'+opts+'</select></td><td style="font-size:12px;color:var(--ink2)">'+el.length+' klubbar</td></tr>';});
  h+='</tbody></table></div>';
  h+='<div><div class="kpis">'+["Öst","Väst","Söder","Norr"].map(r=>'<div class="kpi"><div class="n">'+regC[r]+'</div><div class="l">tävl. '+r+'</div></div>').join('')+'</div>';
- h+='<div style="background:linear-gradient(180deg,#eaf4f8,#f4ede1);border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);margin-bottom:8px"><svg id="aSvg" viewBox="0 0 300 360" width="100%">'+svg+'</svg></div>';
+ h+='<div class="mapcanvas" style="border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);margin-bottom:8px"><svg id="aSvg" viewBox="0 0 300 360" width="100%">'+svg+'</svg></div>';
  h+='<div style="display:flex;gap:9px;flex-wrap:wrap;font-size:11px;color:var(--ink2);margin-bottom:14px"><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#0a7ea4;vertical-align:-1px"></i> Öst</span><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#1f9d6b;vertical-align:-1px"></i> Väst</span><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff7a3c;vertical-align:-1px"></i> Söder</span><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#6b5bd2;vertical-align:-1px"></i> Norr</span></div>';
  h+='<div class="panel"><h3 style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin-bottom:8px">Klubbar – tillgänglighet</h3>';
  h+='<table style="box-shadow:none"><thead><tr><th>Tillg.</th><th>Klubb</th><th>Medl.</th><th>Omd.</th><th>Klarar</th></tr></thead><tbody>';
@@ -447,7 +450,7 @@ function simMatch(a,b){let sa=0,sb=0;while(sa<3&&sb<3){if(Math.random()<1/(1+Mat
 function simulate(){ST.fixtures.forEach(rd=>rd.matches.forEach(m=>m.res=simMatch(ST.teams[m.h].s,ST.teams[m.a].s)));const T=ST.teams.map(t=>({n:t.n,p:0,v:0,f:0,sf:0,sa:0,pts:0}));ST.fixtures.forEach(rd=>rd.matches.forEach(m=>{const sh=m.res[0],sa=m.res[1],H=T[m.h],A=T[m.a];H.p++;A.p++;H.sf+=sh;H.sa+=sa;A.sf+=sa;A.sa+=sh;if(sh>sa){H.v++;A.f++;H.pts+=(sa<=1?3:2);A.pts+=(sa<=1?0:1);}else{A.v++;H.f++;A.pts+=(sh<=1?3:2);H.pts+=(sh<=1?0:1);}}));T.sort((a,b)=>b.pts-a.pts||(b.sf-b.sa)-(a.sf-a.sa));ST.table=T;ST.done=true;}
 function travelStats(){const n=ST.teams.length;const km=Array(n).fill(0),seq=Array.from({length:n},()=>[]);ST.fixtures.forEach(rd=>rd.matches.forEach(m=>{km[m.a]+=m.km*2;seq[m.h].push('H');seq[m.a].push('A');}));const res=ST.teams.map((t,i)=>{const sq=seq[i];let mh=0,ma=0,ch=0,ca=0;sq.forEach(x=>{if(x==='H'){ch++;ca=0;}else{ca++;ch=0;}mh=Math.max(mh,ch);ma=Math.max(ma,ca);});return{n:t.n,away:ST.fixtures.reduce((a,r)=>a+r.matches.filter(m=>m.a===i).length,0),km:km[i],mh:mh,ma:ma};});const total=km.reduce((a,b)=>a+b,0);const maxStreak=Math.max.apply(null,res.map(r=>Math.max(r.mh,r.ma)));return{per:res,total:total,maxStreak:maxStreak};}
 function render(){const root=document.getElementById('serRoot');if(!root)return;const ts=travelStats();const nM=ST.fixtures.reduce((a,r)=>a+r.matches.length,0);const co2=Math.round(ts.total*0.9/100)/10;
- let h=`<h1>Serier – inomhus</h1><div class="sub">Vintersäsongens seriespel. Serva genererar hela spelschemat (dubbelmöten) och visar något Profixio inte gör: <b>reslast per lag, total körsträcka, klimatavtryck och hemma/borta-rättvisa</b>.</div>`;
+ let h=`<h1>Serier – inomhus <span class="simtag">Simulerat exempel</span></h1><div class="sub">Vintersäsongens seriespel. Serva genererar hela spelschemat (dubbelmöten) och visar något Profixio inte gör: <b>reslast per lag, total körsträcka, klimatavtryck och hemma/borta-rättvisa</b>.</div>`;
  h+=`<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px"><div class="fld" style="margin:0"><label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px">Division</label><select id="serDiv" style="padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--sand2);font-size:14px">`+Object.keys(DIV).map(d=>`<option${d===ST.div?' selected':''}>${d}</option>`).join('')+`</select></div><button class="btn" id="serSim">▶ Generera &amp; simulera säsong</button></div>`;
  h+=`<div class="kpis"><div class="kpi"><div class="n">${ST.teams.length}</div><div class="l">lag</div></div><div class="kpi"><div class="n">${ST.fixtures.length}</div><div class="l">omgångar</div></div><div class="kpi"><div class="n">${nM}</div><div class="l">matcher</div></div><div class="kpi"><div class="n">${ts.total.toLocaleString("sv-SE")}</div><div class="l">km resa (t&amp;r)</div></div><div class="kpi"><div class="n">${co2} t</div><div class="l">CO₂ (uppskattat)</div></div><div class="kpi"><div class="n">≤${ts.maxStreak}</div><div class="l">längsta hemma/borta-svit</div></div></div>`;
  h+=`<div class="banner" style="margin-bottom:14px">Schemat balanserar hemma/borta (ingen lång svit) och körsträckan beräknas från klubbarnas verkliga koordinater. Restoptimering och hallkrockar finns i den skarpa motorn – här visas transparensen.</div>`;
@@ -488,7 +491,7 @@ function playCup(){const teams=CUPS[C.cup].map(t=>({n:t[0],s:t[1]}));
 }
 function render(){const root=document.getElementById('cupRoot');if(!root)return;
  const names=['Åttondelsfinal','Kvartsfinal','Semifinal','Final'];
- let h='<h1>Cuper – inomhus</h1><div class="sub">Cupspel (utslagsspel) som Svenska Cupen och USM. Lotta och kör – seedat så att de bästa lagen möts sent.</div>';
+ let h='<h1>Cuper – inomhus <span class="simtag">Simulerat exempel</span></h1><div class="sub">Cupspel (utslagsspel) som Svenska Cupen och USM. Lotta och kör – seedat så att de bästa lagen möts sent.</div>';
  h+='<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px"><div class="fld" style="margin:0"><label style="display:block;font-size:12px;font-weight:700;margin-bottom:4px">Cup</label><select id="cupSel" style="padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--sand2);font-size:14px">'+Object.keys(CUPS).map(c=>'<option'+(c===C.cup?' selected':'')+'>'+c+'</option>').join('')+'</select></div><button class="btn" id="cupGo">🎲 Lotta &amp; kör</button></div>';
  if(C.done){
   if(C.champ)h+='<h2 style="font-size:18px;margin:6px 0 12px">🏆 Vinnare: '+C.champ.n+'</h2>';
@@ -676,15 +679,14 @@ const TIER={Guld:25000,Silver:10000,Brons:5000};const TC={Guld:"#caa53d",Silver:
 const SP=[["Beachshop","Guld"],["Sparbanken Skåne","Guld"],["Volley AB","Silver"],["Café Sand","Silver"],["Lokaltryck","Brons"],["Frukt & Bär","Brons"]].map(s=>({n:s[0],t:s[1]}));
 function render(){const root=document.getElementById('spRoot');if(!root)return;
  const spons=SP.reduce((a,s)=>a+TIER[s.t],0);const anm=32*400, lic=(11540)*0; const reg=anm+spons;
- let h=`<h1>Sponsorer &amp; intäkter</h1><div class="sub">Sponsorpaket per tävling och intäktsöversikt – hjälper arrangör och förbund att tjäna pengar. Exempel: Beach Center SBT 5★.</div>`;
+ let h=`<h2 style="font-size:18px;margin:22px 0 6px">Sponsorer &amp; intäkter</h2><div class="sub">Sponsorpaket per tävling och intäktsöversikt – hjälper arrangör och förbund att tjäna pengar. Exempel: Beach Center SBT 5★.</div>`;
  h+=`<div class="kpis"><div class="kpi"><div class="n">${SP.length}</div><div class="l">sponsorer</div></div><div class="kpi"><div class="n">${spons.toLocaleString("sv-SE")} kr</div><div class="l">sponsorintäkt</div></div><div class="kpi"><div class="n">${(anm).toLocaleString("sv-SE")} kr</div><div class="l">anmälningsavgifter</div></div><div class="kpi"><div class="n">${reg.toLocaleString("sv-SE")} kr</div><div class="l">total intäkt</div></div></div>`;
  h+=`<div class="panel" style="margin-bottom:14px"><div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink2);margin-bottom:8px">Så syns sponsorerna (förhandsvisning av tävlingssida)</div><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--sand2);border-radius:10px;padding:12px">`+SP.map(s=>`<span style="background:#fff;border:1px solid var(--line);border-left:4px solid ${TC[s.t]};border-radius:7px;padding:6px 12px;font-weight:800;font-size:12px">${s.n}</span>`).join('')+`</div></div>`;
  h+=`<table><thead><tr><th>Sponsor</th><th>Paket</th><th class="pts">Värde</th></tr></thead><tbody>`+SP.slice().sort((a,b)=>TIER[b.t]-TIER[a.t]).map(s=>`<tr><td><strong>${s.n}</strong></td><td><span class="pill" style="background:${TC[s.t]}22;color:${TC[s.t]}">${s.t}</span></td><td class="pts">${TIER[s.t].toLocaleString("sv-SE")} kr</td></tr>`).join('')+`</tbody></table>`;
  h+=`<div class="hint" style="font-size:11.5px;color:var(--ink2);margin-top:8px">Paket: Guld 25 000 · Silver 10 000 · Brons 5 000 kr. Förhandsvisning – verklig fakturering kräver backend.</div>`;
  root.innerHTML=h;
 }
-function init(){if(!document.getElementById('v_sponsor')){const sec=document.createElement('section');sec.className='view';sec.id='v_sponsor';sec.innerHTML='<div id="spRoot"></div>';const main=document.querySelector('main');const foot=main?main.querySelector('.foot'):null;if(main){if(foot)main.insertBefore(sec,foot);else main.appendChild(sec);}}render();}
-if(typeof TABS!=='undefined'){TABS.push(['sponsor','Sponsorer',['forbund','arrangor'],'both']);if(typeof renderNav==='function')renderNav();}
+function init(){var eco=document.getElementById('v_eco');if(eco&&!document.getElementById('spRoot')){var d=document.createElement('div');d.id='spRoot';eco.appendChild(d);}render();}
 init();
 })();
 /* ===== Internationellt (intl results -> Swedish points) module ===== */
@@ -836,8 +838,95 @@ if(typeof TABS!=='undefined'){TABS.push(['funk','Funktionärer',['forbund','arra
 init();
 })();
 
+/* ===== Behörighet & compliance (registration gate) module ===== */
+(function(){
+const CATS={'Open (senior)':0,'U21':21,'U19':19,'U17':17};const YEAR=2026;
+const TEAMS=[
+ {p:['Hanna Ek','Maja Strand'],by:[2001,2003],lic:[true,true],anti:[true,true],mem:[true,true]},
+ {p:['Olle Berg','Nils Frisk'],by:[2002,2008],lic:[true,true],anti:[true,false],mem:[true,true]},
+ {p:['Sara Lund','Tuva Holm'],by:[2009,2010],lic:[true,false],anti:[true,true],mem:[true,true]},
+ {p:['Erik Dahl','Loke Ström'],by:[2000,1999],lic:[true,true],anti:[true,true],mem:[true,false]},
+ {p:['Wilma Ros','Ebba Sjö'],by:[2007,2008],lic:[true,true],anti:[true,true],mem:[true,true]},
+ {p:['Axel Mo','Hugo Palm'],by:[2005,2004],lic:[true,true],anti:[true,true],mem:[true,true]}
+];
+const ST={cat:'Open (senior)'};
+function chk(t){const m=CATS[ST.cat];
+ const r=[['Licens giltig',t.lic[0]&&t.lic[1]],['Ålder/klass ('+ST.cat+')',m===0?true:t.by.every(b=>YEAR-b<=m)],['Antidoping (Ren Vinnare)',t.anti[0]&&t.anti[1]],['Medlem i klubb',t.mem[0]&&t.mem[1]]];
+ return {r:r,ok:r.every(x=>x[1])};}
+function render(){const root=document.getElementById('elRoot');if(!root)return;
+ let h=`<h1>Behörighet & compliance</h1><div class="sub">Automatisk grind innan ett lag kan anmälas: licens, ålders-/klasskontroll, antidopingutbildning och klubbmedlemskap. Profixio låter arrangören upptäcka problem i efterhand – Serva stoppar dem före anmälan.</div>`;
+ h+=`<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px"><div class="fld" style="margin:0"><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">Tävlingsklass</label><select id="elCat" style="padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--sand2);font-size:14px">`+Object.keys(CATS).map(c=>`<option${c===ST.cat?' selected':''}>${c}</option>`).join('')+`</select></div></div>`;
+ const res=TEAMS.map(t=>({t:t,c:chk(t)}));const okN=res.filter(x=>x.c.ok).length;
+ h+=`<div class="kpis"><div class="kpi"><div class="n">${TEAMS.length}</div><div class="l">anmälda lag</div></div><div class="kpi"><div class="n" style="color:var(--good)">${okN}</div><div class="l">får anmälas</div></div><div class="kpi"><div class="n" style="color:var(--bad)">${TEAMS.length-okN}</div><div class="l">blockerade</div></div></div>`;
+ h+=`<table><thead><tr><th>Lag</th>`+['Licens','Ålder/klass','Antidoping','Medlem'].map(x=>`<th class="pts">${x}</th>`).join('')+`<th>Status</th></tr></thead><tbody>`;
+ res.forEach(x=>{h+=`<tr><td><strong>${x.t.p.join(' / ')}</strong><div style="font-size:11px;color:var(--ink2)">f. ${x.t.by.join(', ')}</div></td>`+x.c.r.map(rq=>`<td class="pts">${rq[1]?'<span style="color:var(--good);font-weight:800">✓</span>':'<span style="color:var(--bad);font-weight:800">✗</span>'}</td>`).join('')+`<td>${x.c.ok?'<span class="pill open">Får anmälas</span>':'<span class="pill closed">Blockerad</span>'}</td></tr>`;});
+ h+=`</tbody></table>`;
+ const bl=res.filter(x=>!x.c.ok);
+ if(bl.length)h+=`<div class="banner" style="margin-top:12px"><b>Att åtgärda före anmälan:</b> `+bl.map(x=>x.t.p.join('/')+' – '+x.c.r.filter(r=>!r[1]).map(r=>r[0]).join(', ')).join(' · ')+`</div>`;
+ h+=`<div class="hint" style="font-size:11.5px;color:var(--ink2);margin-top:8px">Simulerat exempel. I skarp drift hämtas licens och medlemskap från IdrottOnline och antidopingstatus från Ren Vinnare.</div>`;
+ root.innerHTML=h;
+ const sel=document.getElementById('elCat');if(sel)sel.addEventListener('change',e=>{ST.cat=e.target.value;render();});}
+function init(){if(!document.getElementById('v_elig')){const sec=document.createElement('section');sec.className='view';sec.id='v_elig';sec.innerHTML='<div id="elRoot"></div>';const main=document.querySelector('main');const foot=main?main.querySelector('.foot'):null;if(main){if(foot)main.insertBefore(sec,foot);else main.appendChild(sec);}}render();}
+if(typeof TABS!=='undefined'){TABS.push(['elig','Behörighet',['forbund','arrangor'],'both']);if(typeof renderNav==='function')renderNav();}
+init();
+})();
+/* ===== Entrylista & seedning (entry list + auto seeding) module ===== */
+(function(){
+const NAMES=[['Åhman','Hellvig'],['Nilsson','Olsson'],['Andersson','Berg'],['Eriksson','Sund'],['Larsson','Holm'],['Karlsson','Wik'],['Persson','Roos'],['Svensson','Lind'],['Gustafsson','Mo'],['Pettersson','Sand'],['Jonsson','Frisk'],['Jansson','Palm'],['Hansson','Tell'],['Bengtsson','Krook'],['Lindberg','Norén'],['Magnusson','Ali'],['Olofsson','Dahl'],['Lindström','Ström'],['Lindqvist','Ros'],['Axelsson','Sjö'],['Berglund','Lund'],['Bergström','Strand'],['Lundberg','Falk'],['Lundgren','Holmqvist']];
+const ENTRIES=NAMES.map((n,i)=>({team:n.join('/'),pts:2400-i*80-(i%3)*15,out:false}));
+const ST={cap:16};const DEADLINE=new Date('2026-07-10');const TODAY=new Date('2026-06-20');
+function active(){return ENTRIES.filter(e=>!e.out);}
+function render(){const root=document.getElementById('enRoot');if(!root)return;
+ const act=active();const main=act.slice(0,ST.cap);const res=act.slice(ST.cap);
+ const days=Math.max(0,Math.round((DEADLINE-TODAY)/864e5));
+ let h=`<h1>Entrylista & seedning</h1><div class="sub">Anmälningar rankas automatiskt efter entrypoäng. Huvudtablån fylls uppifrån, resten hamnar på reserv, och seedningen sätts automatiskt. En strykning flyttar upp nästa reserv direkt.</div>`;
+ h+=`<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px"><div class="fld" style="margin:0"><label style="font-size:12px;font-weight:700;display:block;margin-bottom:4px">Huvudtablå (antal lag)</label><select id="enCap" style="padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--sand2);font-size:14px">`+[8,12,16,24].map(c=>`<option${c===ST.cap?' selected':''}>${c}</option>`).join('')+`</select></div></div>`;
+ h+=`<div class="kpis"><div class="kpi"><div class="n">${act.length}</div><div class="l">anmälda lag</div></div><div class="kpi"><div class="n">${main.length}</div><div class="l">i huvudtablå</div></div><div class="kpi"><div class="n">${res.length}</div><div class="l">på reserv</div></div><div class="kpi"><div class="n">${days}</div><div class="l">dagar till deadline</div></div></div>`;
+ h+=`<div class="blayout" style="grid-template-columns:1fr 1fr"><div><h2 style="font-size:17px;margin:6px 0 10px">Huvudtablå (seedad)</h2><table><thead><tr><th class="pos">Seed</th><th>Lag</th><th class="pts">Entrypoäng</th><th></th></tr></thead><tbody>`+
+  main.map((e,i)=>`<tr><td class="pos">${i+1}</td><td><strong>${e.team}</strong></td><td class="pts">${e.pts}</td><td><button data-out="${e.team}" style="background:none;border:0;color:var(--bad);font-weight:700;cursor:pointer;font-size:12px">Stryk</button></td></tr>`).join('')+`</tbody></table></div>`;
+ h+=`<div><h2 style="font-size:17px;margin:6px 0 10px">Reservlista</h2>`+(res.length?`<table><thead><tr><th class="pos">#</th><th>Lag</th><th class="pts">Poäng</th></tr></thead><tbody>`+res.map((e,i)=>`<tr><td class="pos">${i+1}</td><td>${e.team}${i===0?' <span class="pill open" style="font-size:10px">nästa in</span>':''}</td><td class="pts">${e.pts}</td></tr>`).join('')+`</tbody></table>`:`<div class="panel">Alla anmälda ryms i huvudtablån.</div>`)+`</div></div>`;
+ const outs=ENTRIES.filter(e=>e.out);
+ if(outs.length)h+=`<div class="banner" style="margin-top:12px"><b>Strukna:</b> ${outs.map(e=>e.team).join(', ')} – platser automatiskt ombesatta från reserv och seedningen omräknad.</div>`;
+ h+=`<div class="hint" style="font-size:11.5px;color:var(--ink2);margin-top:8px">Simulerat exempel. Seedning 1..n efter entryranking (svensk entryranking / FIVB-poäng i skarp drift). Deadline ${DEADLINE.toLocaleDateString('sv-SE')}.</div>`;
+ root.innerHTML=h;
+ const sel=document.getElementById('enCap');if(sel)sel.addEventListener('change',e=>{ST.cap=+e.target.value;render();});
+ root.querySelectorAll('[data-out]').forEach(b=>b.addEventListener('click',()=>{const e=ENTRIES.find(x=>x.team===b.dataset.out);if(e)e.out=true;render();}));}
+function init(){if(!document.getElementById('v_entry')){const sec=document.createElement('section');sec.className='view';sec.id='v_entry';sec.innerHTML='<div id="enRoot"></div>';const main=document.querySelector('main');const foot=main?main.querySelector('.foot'):null;if(main){if(foot)main.insertBefore(sec,foot);else main.appendChild(sec);}}render();}
+if(typeof TABS!=='undefined'){TABS.push(['entry','Entrylista',['forbund','klubb','arrangor','spelare'],'beach']);if(typeof renderNav==='function')renderNav();}
+init();
+})();
+/* ===== Väder & kontingensplan (weather contingency) module ===== */
+(function(){
+const HRS=[9,10,11,12,13,14,15,16,17];
+const FC=[{t:19,w:4,r:5},{t:21,w:5,r:5},{t:22,w:6,r:10},{t:23,w:7,r:20},{t:22,w:9,r:70},{t:21,w:11,r:80},{t:22,w:8,r:40},{t:23,w:6,r:15},{t:22,w:5,r:10}];
+const COURTS=4;const ST={rainHour:13};
+function icon(r){return r>=60?'🌧️':r>=30?'🌦️':r>=15?'⛅':'☀️';}
+function build(shift){const total=24;const rows=[];let m=1;
+ for(let i=0;i<HRS.length&&m<=total;i++){const slot=[];for(let c=0;c<COURTS&&m<=total;c++)slot.push(m++);rows.push({hr:HRS[i],matches:slot});}
+ if(!shift)return {rows:rows,end:rows[rows.length-1].hr+1};
+ const blocked=[ST.rainHour,ST.rainHour+1];
+ const keep=rows.filter(r=>!blocked.includes(r.hr));
+ const moved=rows.filter(r=>blocked.includes(r.hr)).reduce((a,r)=>a.concat(r.matches),[]);
+ let endHr=Math.max.apply(null,keep.map(r=>r.hr));const out=keep.slice();let j=0;
+ while(j<moved.length){endHr++;out.push({hr:endHr,matches:moved.slice(j,j+COURTS),moved:true});j+=COURTS;}
+ out.sort((a,b)=>a.hr-b.hr);return {rows:out,end:endHr+1};}
+function tbl(s){return `<table><thead><tr><th>Tid</th><th>Matcher (bana 1–${COURTS})</th></tr></thead><tbody>`+s.rows.map(r=>`<tr><td style="font-weight:800;color:${r.moved?'var(--sun)':'var(--sea)'}">${r.hr}:00${r.moved?' ↻':''}</td><td>${r.matches.map(x=>'#'+x).join(' · ')}</td></tr>`).join('')+`</tbody></table>`;}
+function render(){const root=document.getElementById('wxRoot');if(!root)return;
+ const base=build(false),adj=build(true);let peak=0;FC.forEach((f,i)=>{if(f.r>FC[peak].r)peak=i;});
+ let h=`<h1>Väder & kontingensplan</h1><div class="sub">Beachvolley är väderkänsligt. Serva läser timprognosen, flaggar regnfönstret och räknar automatiskt om spelschemat – något renodlade tävlingsverktyg som Profixio inte gör.</div>`;
+ h+=`<div class="kpis"><div class="kpi"><div class="n">${FC[peak].r}%</div><div class="l">max nederbörd kl ${HRS[peak]}</div></div><div class="kpi"><div class="n">${Math.max.apply(null,FC.map(f=>f.w))} m/s</div><div class="l">max vind</div></div><div class="kpi"><div class="n">${base.end}:00</div><div class="l">planerad sluttid</div></div><div class="kpi"><div class="n" style="color:var(--sun)">${adj.end}:00</div><div class="l">sluttid m. regnplan</div></div></div>`;
+ h+=`<h2 style="font-size:17px;margin:8px 0 8px">Timprognos – tävlingsdag</h2><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">`+FC.map((f,i)=>`<div style="flex:1;min-width:56px;text-align:center;background:${f.r>=60?'#e06a5222':'var(--sand2)'};border:1px solid var(--line);border-radius:10px;padding:8px 4px"><div style="font-size:11px;color:var(--ink2)">${HRS[i]}:00</div><div style="font-size:20px">${icon(f.r)}</div><div style="font-weight:800;font-size:13px">${f.t}°</div><div style="font-size:11px;color:var(--sea)">${f.r}%</div><div style="font-size:10px;color:var(--ink2)">${f.w} m/s</div></div>`).join('')+`</div>`;
+ h+=`<div class="banner" style="margin-bottom:12px">⚠️ Regnfönster kl ${ST.rainHour}:00–${ST.rainHour+1}:00 (≥60% nederbörd). Servas plan: pausa banorna, skjut matcherna bakåt och kör vidare så snart fönstret passerat.</div>`;
+ h+=`<div class="blayout" style="grid-template-columns:1fr 1fr"><div><h2 style="font-size:16px;margin:6px 0 8px">Ordinarie schema</h2>${tbl(base)}</div><div><h2 style="font-size:16px;margin:6px 0 8px">Med regnplan</h2>${tbl(adj)}</div></div>`;
+ h+=`<div class="hint" style="font-size:11.5px;color:var(--ink2);margin-top:8px">Simulerat exempel. Live-omflyttning under pågående tävling kräver backend; prognosanalys och omplanering körs här i klienten.</div>`;
+ root.innerHTML=h;}
+function init(){if(!document.getElementById('v_weather')){const sec=document.createElement('section');sec.className='view';sec.id='v_weather';sec.innerHTML='<div id="wxRoot"></div>';const main=document.querySelector('main');const foot=main?main.querySelector('.foot'):null;if(main){if(foot)main.insertBefore(sec,foot);else main.appendChild(sec);}}render();}
+if(typeof TABS!=='undefined'){TABS.push(['weather','Väder & plan',['forbund','arrangor'],'beach']);if(typeof renderNav==='function')renderNav();}
+init();
+})();
+
 var lang='sv';
-var DICT={"Översikt":"Overview","Tävlingar":"Tournaments","Bygg & kör":"Build & run","Bygg &amp; kör":"Build & run","Ranking":"Ranking","Register":"Registry","Licenser":"Licenses","Övergångar":"Transfers","Ekonomi":"Finances","Domare":"Referees","Tilldelning":"Allocation","Serier":"Leagues","Cuper":"Cups","Wildcard":"Wildcard","Incheckning":"Check-in","Sponsorer":"Sponsors","Analys":"Analytics","Internationellt":"International","Rankingprojektion":"Ranking what-if","Talangstege":"Talent pathway","Funktionärer":"Officials"};
+var DICT={"Översikt":"Overview","Tävlingar":"Tournaments","Bygg & kör":"Build & run","Bygg &amp; kör":"Build & run","Ranking":"Ranking","Register":"Registry","Licenser":"Licenses","Övergångar":"Transfers","Ekonomi":"Finances","Domare":"Referees","Tilldelning":"Allocation","Serier":"Leagues","Cuper":"Cups","Wildcard":"Wildcard","Incheckning":"Check-in","Sponsorer":"Sponsors","Analys":"Analytics","Internationellt":"International","Rankingprojektion":"Ranking what-if","Talangstege":"Talent pathway","Funktionärer":"Officials","Behörighet":"Eligibility","Entrylista":"Entry list","Väder & plan":"Weather & plan","Ekonomi & sponsring":"Finances & sponsors","Simulerat exempel":"Simulated example"};
 function T(s){return (lang==='en'&&DICT[s])?DICT[s]:s;}
 (function(){var lt=document.getElementById('langToggle');var sn=document.getElementById('subnav');if(sn)sn.setAttribute('aria-label','Sektioner');
  function setLang(l){lang=l;document.documentElement.lang=l;if(lt)lt.textContent=(l==='sv'?'EN':'SV');
@@ -846,4 +935,6 @@ function T(s){return (lang==='en'&&DICT[s])?DICT[s]:s;}
  if(lt)lt.addEventListener('click',function(){setLang(lang==='sv'?'en':'sv');});})();
 
 (function(){if(typeof DICT==='object')Object.assign(DICT,{'Tävling':'Competition','Ranking':'Ranking','Spelare':'Players & clubs','Arrangör':'Organising','Ekonomi':'Finances','Analys':'Analytics','Översikt':'Overview','Nationell ranking':'National ranking','Avgifter':'Fees'});})();
-</scri
+</script>
+</body>
+</html>
