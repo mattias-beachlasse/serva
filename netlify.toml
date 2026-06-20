@@ -1,0 +1,8 @@
+[build]
+  publish = "."
+
+# Serva is a single static file. Serve index.html at the site root.
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
